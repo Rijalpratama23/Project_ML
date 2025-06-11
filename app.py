@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 
 st.set_page_config(page_title="Analisis Penjualan", layout="wide")
 
-st.title("📊 Visualisasi Jumlah Penjualan per Produk")
+st.title("📊 Visualisasi Jumlah Penjualan per Produk🧐")
 
 uploaded_file = st.file_uploader("Unggah file Excel (.xlsx)", type=["xlsx"])
 
