@@ -1,34 +1,30 @@
+import streamlit as st
 import pandas as pd
-from sklearn.cluster import KMeans
-from sklearn.preprocessing import StandardScaler
-import matplotlib.pyplot as plt
 import seaborn as sns
+import matplotlib.pyplot as plt
 
-df = pd.read_excel('/content/data_penjualan.csv.xlsx', sheet_name='data_penjualan')
+# Judul aplikasi
+st.title("Analisis Data Penjualan")
 
-data_numerik = df[['Jumlah Order', 'Harga', 'Total']]
+# Upload file
+uploaded_file = st.file_uploader("Upload file Excel", type=["xlsx"])
 
-scaler = StandardScaler()
-data_scaled = scaler.fit_transform(data_numerik)
+if uploaded_file is not None:
+    try:
+        # Membaca file Excel dan sheet tertentu
+        df = pd.read_excel(uploaded_file, sheet_name='data_penjualan')
 
-inertia = []
-for k in range(1, 11):
-    kmeans = KMeans(n_clusters=k, random_state=42)
-    kmeans.fit(data_scaled)
-    inertia.append(kmeans.inertia_)
+        st.subheader("📊 Data Penjualan")
+        st.write(df)
 
-plt.plot(range(1, 11), inertia, marker='o')
-plt.title('Elbow Method')
-plt.xlabel('Jumlah Cluster')
-plt.ylabel('Inertia')
-plt.show()
+        # Contoh visualisasi: jumlah penjualan per produk
+        st.subheader("📈 Visualisasi Jumlah Penjualan per Produk")
+        plt.figure(figsize=(10, 5))
+        sns.barplot(data=df, x='produk', y='jumlah')
+        plt.xticks(rotation=45)
+        st.pyplot(plt)
 
-kmeans = KMeans(n_clusters=3, random_state=42)
-df['Cluster'] = kmeans.fit_predict(data_scaled)
-
-sns.pairplot(df, hue='Cluster', vars=['Jumlah Order', 'Harga', 'Total'], palette='Set2')
-plt.suptitle("Visualisasi Cluster", y=1.02)
-plt.show()
-
-cluster_summary = df.groupby('Cluster')[['Jumlah Order', 'Harga', 'Total']].mean()
-print(cluster_summary)
+    except Exception as e:
+        st.error(f"Terjadi kesalahan saat membaca file: {e}")
+else:
+    st.info("Silakan upload file Excel (.xlsx) yang berisi sheet 'data_penjualan'.")
